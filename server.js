@@ -1,18 +1,20 @@
 const express = require("express");
 const { ConfidentialClientApplication } = require("@azure/msal-node");
 const cors = require("cors");
+const dotenv = require("dotenv");
+
+dotenv.config(); // Load environment variables from .env file
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3000; // Use PORT from .env file or default to 3000
 
 app.use(cors()); // Enable CORS for all routes
 
 const msalConfig = {
   auth: {
-    clientId: "a679867c-ab59-4542-b293-dfafad073c4e", // Replace with your client ID
-    authority:
-      "https://login.microsoftonline.com/d1e4eca3-158f-4f70-b22d-1f26864393a0", // Replace with your tenant ID
-    clientSecret: "Fja8Q~qHPdh3JTowAmAl-2gI8v84ifUoOFXBFa9~", // Replace with your client secret value
+    clientId: process.env.CLIENT_ID, // Use CLIENT_ID from .env file
+    authority: process.env.AUTHORITY, // Use AUTHORITY from .env file
+    clientSecret: process.env.CLIENT_SECRET, // Use CLIENT_SECRET from .env file
   },
 };
 
