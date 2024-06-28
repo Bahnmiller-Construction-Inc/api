@@ -12,9 +12,9 @@ app.use(cors()); // Enable CORS for all routes
 
 const msalConfig = {
   auth: {
-    clientId: process.env.CLIENT_ID, // Use CLIENT_ID from .env file
-    authority: process.env.AUTHORITY, // Use AUTHORITY from .env file
-    clientSecret: process.env.CLIENT_SECRET, // Use CLIENT_SECRET from .env file
+    clientId: process.env.CLIENT_ID,
+    authority: process.env.AUTHORITY,
+    clientSecret: process.env.CLIENT_SECRET,
   },
 };
 
