@@ -1,13 +1,13 @@
-const axios = require("axios");
+import axios from "axios";
 
-const getToken = async () => {
+export const getToken = async () => {
   try {
-    const response = await axios.get("http://localhost:3001/getToken");
+    const response = await axios.get(
+      "https://sea-turtle-app-eodm2.ondigitalocean.app/getToken"
+    );
     return response.data.accessToken;
   } catch (error) {
     console.error("Error getting token:", error);
     throw new Error("Error getting token");
   }
 };
-
-module.exports = { getToken };
