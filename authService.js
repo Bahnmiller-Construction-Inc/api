@@ -1,11 +1,42 @@
-import axios from "axios";
+require("dotenv").config();
+const express = require("express");
+const axios = require("axios");
+const cors = require("cors");
 
-export const getToken = async () => {
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+app.use(
+  cors({
+    origin: "https://sea-turtle-app-eodm2.ondigitalocean.app", // Allow only your frontend URL
+  })
+);
+
+app.get("/getToken", async (req, res) => {
   try {
-    const response = await axios.get("http://209.38.64.234:3001/getToken"); // Use the correct port if it's different
-    return response.data.accessToken;
+    const response = await axios.post(
+      `${process.env.AUTHORITY}/oauth2/v2.0/token`,
+      null,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        params: {
+          client_id: process.env.CLIENT_ID,
+          client_secret: process.env.CLIENT_SECRET,
+          scope: "https://graph.microsoft.com/.default",
+          grant_type: "client_credentials",
+        },
+      }
+    );
+
+    res.json({ accessToken: response.data.access_token });
   } catch (error) {
     console.error("Error getting token:", error);
-    throw new Error("Error getting token");
+    res.status(500).send("Error getting token");
   }
-};
+});
+
+app.listen(PORT, () => {
+  console.log(`Auth service running on port ${PORT}`);
+});
