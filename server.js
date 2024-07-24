@@ -16,18 +16,22 @@ app.use(
 
 app.get("/getToken", async (req, res) => {
   try {
+    console.log("AUTHORITY:", process.env.AUTHORITY);
+    console.log("CLIENT_ID:", process.env.CLIENT_ID);
+    console.log("CLIENT_SECRET:", process.env.CLIENT_SECRET);
+
+    const params = new URLSearchParams();
+    params.append("client_id", process.env.CLIENT_ID);
+    params.append("client_secret", process.env.CLIENT_SECRET);
+    params.append("scope", "https://graph.microsoft.com/.default");
+    params.append("grant_type", "client_credentials");
+
     const response = await axios.post(
       `${process.env.AUTHORITY}/oauth2/v2.0/token`,
-      null,
+      params.toString(),
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-        },
-        params: {
-          client_id: process.env.CLIENT_ID,
-          client_secret: process.env.CLIENT_SECRET,
-          scope: "https://graph.microsoft.com/.default",
-          grant_type: "client_credentials",
         },
       }
     );
