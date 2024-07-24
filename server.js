@@ -2,11 +2,12 @@ const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const qs = require("qs"); // Import qs
 
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
-const port = process.env.PORT || 3000; // Use PORT from .env file or default to 3000
+const port = process.env.PORT || 3001;
 
 app.use(
   cors({
@@ -20,15 +21,16 @@ app.get("/getToken", async (req, res) => {
     console.log("CLIENT_ID:", process.env.CLIENT_ID);
     console.log("CLIENT_SECRET:", process.env.CLIENT_SECRET);
 
-    const params = new URLSearchParams();
-    params.append("client_id", process.env.CLIENT_ID);
-    params.append("client_secret", process.env.CLIENT_SECRET);
-    params.append("scope", "https://graph.microsoft.com/.default");
-    params.append("grant_type", "client_credentials");
+    const data = qs.stringify({
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+      scope: "https://graph.microsoft.com/.default",
+      grant_type: "client_credentials",
+    });
 
     const response = await axios.post(
       `${process.env.AUTHORITY}/oauth2/v2.0/token`,
-      params,
+      data,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
