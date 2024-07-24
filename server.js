@@ -7,7 +7,7 @@ const qs = require("qs"); // Import qs
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3001; // Use PORT from .env file or default to 3001
 
 app.use(
   cors({
@@ -17,10 +17,6 @@ app.use(
 
 app.get("/getToken", async (req, res) => {
   try {
-    console.log("AUTHORITY:", process.env.AUTHORITY);
-    console.log("CLIENT_ID:", process.env.CLIENT_ID);
-    console.log("CLIENT_SECRET:", process.env.CLIENT_SECRET);
-
     const data = qs.stringify({
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
@@ -47,6 +43,102 @@ app.get("/getToken", async (req, res) => {
     res.status(500).send("Error getting token");
   }
 });
+
+app.post("/uploadFile", async (req, res) => {
+  try {
+    const accessToken = await getToken();
+    const driveId =
+      "b!5KywVeEld0y8NNhDfG0uXN-CacW2b1ZAs6PS9EVImUauWERqyueNQaOSRvZafpFk";
+    const pyrlFolderId = "01A2EJU32WPY7QDKJLZVDY7RJLV5AVMXLB";
+
+    const newHireFolder = await findFolder(
+      accessToken,
+      driveId,
+      pyrlFolderId,
+      "00-New Hire Paperwork"
+    );
+
+    if (newHireFolder) {
+      // Create a dummy file for upload testing
+      const fileContent = "Hello, world!";
+      const buffer = Buffer.from(fileContent, "utf8");
+      const uploadResponse = await uploadFile(
+        accessToken,
+        driveId,
+        newHireFolder.id,
+        "testfile.txt",
+        buffer
+      );
+      res.json({ uploadResponse });
+    } else {
+      res.status(404).send("00-New Hire Paperwork folder not found.");
+    }
+  } catch (error) {
+    console.error(
+      "Error uploading file:",
+      error.response ? error.response.data : error.message
+    );
+    res.status(500).send("Error uploading file");
+  }
+});
+
+const getToken = async () => {
+  const data = qs.stringify({
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
+    scope: "https://graph.microsoft.com/.default",
+    grant_type: "client_credentials",
+  });
+
+  const response = await axios.post(
+    `${process.env.AUTHORITY}/oauth2/v2.0/token`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
+  return response.data.access_token;
+};
+
+const findFolder = async (accessToken, driveId, parentFolderId, folderName) => {
+  const response = await axios.get(
+    `https://graph.microsoft.com/v1.0/drives/${driveId}/items/${parentFolderId}/children`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const folder = response.data.value.find(
+    (item) => item.name === folderName && item.folder
+  );
+  return folder;
+};
+
+const uploadFile = async (
+  accessToken,
+  driveId,
+  parentFolderId,
+  fileName,
+  fileBuffer
+) => {
+  const response = await axios.put(
+    `https://graph.microsoft.com/v1.0/drives/${driveId}/items/${parentFolderId}:/${fileName}:/content`,
+    fileBuffer,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "text/plain",
+      },
+    }
+  );
+
+  return response.data;
+};
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
