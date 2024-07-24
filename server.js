@@ -28,7 +28,7 @@ app.get("/getToken", async (req, res) => {
 
     const response = await axios.post(
       `${process.env.AUTHORITY}/oauth2/v2.0/token`,
-      params.toString(),
+      params,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -38,7 +38,10 @@ app.get("/getToken", async (req, res) => {
 
     res.json({ accessToken: response.data.access_token });
   } catch (error) {
-    console.error("Error getting token:", error);
+    console.error(
+      "Error getting token:",
+      error.response ? error.response.data : error.message
+    );
     res.status(500).send("Error getting token");
   }
 });
