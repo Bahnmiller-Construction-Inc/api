@@ -11,7 +11,10 @@ const port = process.env.PORT || 3001; // Use PORT from .env file or default to 
 
 app.use(
   cors({
-    origin: "https://sea-turtle-app-eodm2.ondigitalocean.app", // Allow only your frontend URL
+    origin: [
+      "https://sea-turtle-app-eodm2.ondigitalocean.app",
+      "http://localhost:3000",
+    ], // Allow both your production and local development frontend URLs
   })
 );
 
@@ -65,14 +68,14 @@ app.post("/uploadFile", async (req, res) => {
     );
 
     if (newHireFolder) {
-      // Create a dummy file for upload testing
-      const fileContent = "Hello, world!";
+      // Create a different dummy file for upload testing
+      const fileContent = "This is a different test file.";
       const buffer = Buffer.from(fileContent, "utf8");
       const uploadResponse = await uploadFile(
         accessToken,
         driveId,
         newHireFolder.id,
-        "testfile.txt",
+        "different-testfile.txt",
         buffer
       );
       res.json({ uploadResponse });
