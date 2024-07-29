@@ -91,6 +91,45 @@ app.post("/uploadFile", async (req, res) => {
   }
 });
 
+app.get("/getMembers", async (req, res) => {
+  try {
+    const token = await getTokenFromRaken();
+    const response = await axios.get(
+      "https://developer.rakenapp.com/api/members",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching members:", error);
+    res.status(500).send("Error fetching members");
+  }
+});
+
+const getTokenFromRaken = async () => {
+  const data = qs.stringify({
+    client_id: process.env.RAKEN_CLIENT_ID,
+    client_secret: process.env.RAKEN_CLIENT_SECRET,
+    grant_type: "client_credentials",
+  });
+
+  const response = await axios.post(
+    `${process.env.RAKEN_AUTHORITY}/oauth2/token`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
+  return response.data.access_token;
+};
+
 const getToken = async () => {
   const data = qs.stringify({
     client_id: process.env.CLIENT_ID,
