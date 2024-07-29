@@ -2,7 +2,7 @@ const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const qs = require("qs"); // Import qs
+const qs = require("qs");
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -22,6 +22,36 @@ app.use(
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
+});
+
+// Route to get Raken token
+app.get("/getRakenToken", async (req, res) => {
+  try {
+    const data = qs.stringify({
+      client_id: process.env.RAKEN_CLIENT_ID,
+      client_secret: process.env.RAKEN_CLIENT_SECRET,
+      grant_type: "client_credentials",
+      code: process.env.CODE,
+    });
+
+    const response = await axios.post(
+      "https://app.rakenapp.com/oauth/token",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    res.json({ accessToken: response.data.access_token });
+  } catch (error) {
+    console.error(
+      "Error getting Raken token:",
+      error.response ? error.response.data : error.message
+    );
+    res.status(500).send("Error getting Raken token");
+  }
 });
 
 app.get("/getToken", async (req, res) => {
@@ -90,46 +120,6 @@ app.post("/uploadFile", async (req, res) => {
     res.status(500).send("Error uploading file");
   }
 });
-
-app.get("/getMembers", async (req, res) => {
-  try {
-    const token = await getTokenFromRaken();
-    const response = await axios.get(
-      "https://developer.rakenapp.com/api/members",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    res.json(response.data);
-  } catch (error) {
-    console.error("Error fetching members:", error);
-    res.status(500).send("Error fetching members");
-  }
-});
-
-const getTokenFromRaken = async () => {
-  const data = qs.stringify({
-    code: process.env.CODE,
-    client_id: process.env.RAKEN_CLIENT_ID,
-    client_secret: process.env.RAKEN_CLIENT_SECRET,
-    grant_type: "client_credentials",
-  });
-
-  const response = await axios.post(
-    `${process.env.RAKEN_AUTHORITY}/oauth2/token`,
-    data,
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    }
-  );
-
-  return response.data.access_token;
-};
 
 const getToken = async () => {
   const data = qs.stringify({
