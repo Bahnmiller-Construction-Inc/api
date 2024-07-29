@@ -112,6 +112,7 @@ app.get("/getMembers", async (req, res) => {
 
 const getTokenFromRaken = async () => {
   const data = qs.stringify({
+    code: process.env.CODE,
     client_id: process.env.RAKEN_CLIENT_ID,
     client_secret: process.env.RAKEN_CLIENT_SECRET,
     grant_type: "client_credentials",
