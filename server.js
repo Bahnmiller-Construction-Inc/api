@@ -14,7 +14,7 @@ app.use(
     origin: [
       "https://sea-turtle-app-eodm2.ondigitalocean.app",
       "http://localhost:3000",
-      "http://bahnmillernewhire.com",
+      "https://bahnmillernewhire.com",
     ], // Allow both your production and local development frontend URLs
   })
 );
