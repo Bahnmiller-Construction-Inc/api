@@ -150,8 +150,7 @@ const uploadFile = async (
 
   return response.data;
 };
-
-const healthCheck = app.get("__status__/health", (req, res) => {
+app.get("__status__/health", (req, res) => {
   res.status(200);
 });
 
