@@ -12,9 +12,9 @@ const port = process.env.PORT || 3001; // Use PORT from .env file or default to 
 app.use(
   cors({
     origin: [
+      "https://bahnmillernewhire.com",
       "https://sea-turtle-app-eodm2.ondigitalocean.app",
       "http://localhost:3000",
-      "https://bahnmillernewhire.com",
     ], // Allow both your production and local development frontend URLs
   })
 );
@@ -23,36 +23,6 @@ app.use(
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
-});
-
-// Route to get Raken token
-app.get("/getRakenToken", async (req, res) => {
-  try {
-    const data = qs.stringify({
-      client_id: process.env.RAKEN_CLIENT_ID,
-      client_secret: process.env.RAKEN_CLIENT_SECRET,
-      grant_type: "client_credentials",
-      code: process.env.CODE,
-    });
-
-    const response = await axios.post(
-      "https://app.rakenapp.com/oauth/token",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-
-    res.json({ accessToken: response.data.access_token });
-  } catch (error) {
-    console.error(
-      "Error getting Raken token:",
-      error.response ? error.response.data : error.message
-    );
-    res.status(500).send("Error getting Raken token");
-  }
 });
 
 app.get("/getToken", async (req, res) => {
