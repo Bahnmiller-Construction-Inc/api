@@ -15,7 +15,8 @@ app.use(
       "https://bahnmillernewhire.com",
       "https://sea-turtle-app-eodm2.ondigitalocean.app",
       "http://localhost:3000",
-    ], // Allow both your production and local development frontend URLs
+    ],
+    methods: "GET, POST", // Allow both your production and local development frontend URLs
   })
 );
 
@@ -149,6 +150,10 @@ const uploadFile = async (
 
   return response.data;
 };
+
+const healthCheck = app.get("__status__/health", (req, res) => {
+  res.status(200);
+});
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
