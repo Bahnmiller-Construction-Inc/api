@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/__status__/health", (req, res) => {
-  res.status(200);
+  res.sendStatus(200);
 });
 
 app.get("/getToken", async (req, res) => {
