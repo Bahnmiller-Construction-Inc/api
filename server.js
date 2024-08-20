@@ -26,6 +26,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/__status__/health", (req, res) => {
+  res.status(200);
+});
+
 app.get("/getToken", async (req, res) => {
   try {
     const data = qs.stringify({
@@ -150,9 +154,6 @@ const uploadFile = async (
 
   return response.data;
 };
-app.get("__status__/health", (req, res) => {
-  res.status(200);
-});
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
