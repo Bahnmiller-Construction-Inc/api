@@ -12,7 +12,7 @@ const port = process.env.PORT || 3001; // Use PORT from .env file or default to 
 app.use(
   cors({
     origin: [
-      "https://bahnmillernewhire.com",
+      // "https://bahnmillernewhire.com",
       "https://sea-turtle-app-eodm2.ondigitalocean.app",
       "http://localhost:3000",
     ],
